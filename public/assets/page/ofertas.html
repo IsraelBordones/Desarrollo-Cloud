@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mil Sabores</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/categories.css">
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+  <script src="../js/filtro.js" defer></script>
+  <script src="../js/inicio_sesion.js" defer></script>
+  <script type="module" src="../js/firebase-config.js"></script>
+  <script type="module" src="../js/auth.js"></script>
+  <script src="../js/validaciones.js" defer></script>
+  <script type="module" src="../js/ofertas.js"></script>
+</head>
+<body>
+  <!--======================= HEADER =======================-->
+
+  <header class="topbar">
+    <div class="header-title">
+      <strong>🍰 Pastelería Mil Sabores</strong>
+    </div>
+
+
+
+    <nav class="navegacion" aria-label="Navegación principal">
+      <a href="../../index.html">Home</a>
+      <a href="catalogo.html">Categoria</a>
+      <a href="nosotros.html">Nosotros</a>
+      <a href="blog.html">Blog</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="ofertas.html">Ofertas</a>
+    </nav>
+
+    <div class="usuario">
+      <a id="inicio_sesion" href="login.html">Iniciar sesión</a>
+      <span class="separar">|</span>
+      <a id="registrarse" href="registrarse.html">Crear Cuenta</a>
+      <span class="separar">|</span>
+      <a id="cart-link" href="carrito.html">🛒 Carrito (0)</a>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="filtros" aria-labelledby="categorias">
+      <h2 id="categorias">Categorías de Ofertas</h2>
+      <label for="filtro">Filtrar por categoría: </label>
+      <select id="filtro" name="filtro">
+        <option value="all">Todas</option>
+        <option value="tortas_cuadradas">Tortas Cuadradas</option>
+        <option value="tortas_circulares">Tortas Circulares</option>
+        <option value="postres_individuales">Postres Individuales</option>
+        <option value="productos_sin_azucar">Productos sin azúcar</option>
+        <option value="pasteleria_tradicional">Pastelería Tradicional</option>
+        <option value="productos_sin_gluten">Productos sin gluten</option>
+        <option value="vegano">Vegano</option>
+        <option value="especiales">Especiales</option>
+      </select>
+      <div id="mensaje" aria-live="polite" class="status"></div>
+    </section>
+
+    <section class="productos" aria-labelledby="titulo-productos">
+      <h2 id="titulo-productos">Todas las Ofertas</h2>
+
+      <div id="productosGrid" class="buscador">
+        <!-- Los productos se cargarán dinámicamente desde Firebase -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="contacto">
+    <nav aria-label="Redes">
+      <a href="#">X</a> ·
+      <a href="#" id="blog">Instagram</a> ·
+      <a href="#">WhatsApp</a>
+    </nav>
+  </footer>
+
+  <script src="../js/ofertas.js"></script>
+  <script src="../js/carrito.js"></script>
+  <script type="module" src="../../js/auth.js"></script>
+</body>
+</html>

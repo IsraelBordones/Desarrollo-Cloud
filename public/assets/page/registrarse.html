@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro de Usuario</title>
+  <link rel="stylesheet" href="../css/registrarse.css" />
+</head>
+<body>
+  <nav class="login-nav">
+    <a href="../../index.html" class="nav-button">Home</a>
+    <a href="catalogo.html" class="nav-button">Productos</a>
+    <a href="nosotros.html" class="nav-button">Nosotros</a>
+    <a href="blog.html" class="nav-button">Blog</a>
+    <a href="contacto.html" class="nav-button">Contacto</a>
+    <a href="ofertas.html" class="nav-button">Ofertas</a>
+  </nav>
+
+  <main>
+    <h2>Registro de usuario</h2>
+  <form id="form-register" autocomplete="off">
+    <div class="form-group">
+                <label for="reg-run">RUN (sin puntos ni guión): </label>
+                <input type="text" id="reg-run" name="run" minlength="7" maxlength="9" required />
+              </div>
+    
+      <div class="form-group">
+        <label for="nombre">NOMBRE COMPLETO</label>
+        <input type="text" id="nombre" name="nombre" required>
+      </div>
+
+      <div class="form-group">
+        <label for="correo_reg">CORREO</label>
+        <input type="email" id="correo_reg" name="correo_reg" required>
+      </div>
+
+      <div class="form-group">
+        <label for="correo2">CONFIRMAR CORREO</label>
+        <input type="email" id="correo2" name="correo2" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">CONTRASEÑA</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password2">CONFIRMAR CONTRASEÑA</label>
+        <input type="password" id="password2" name="password2" required>
+      </div>
+
+      <div class="form-group">
+        <label for="telefono">TELÉFONO (opcional)</label>
+        <input type="tel" id="telefono" name="telefono">
+      </div>
+
+        <div class="form-group">
+          <label for="reg-fecha">FECHA DE NACIMIENTO</label>
+          <input type="date" id="reg-fecha" name="reg-fecha" required>
+        </div>
+
+      <div class="form-group">
+        <label for="comuna">COMUNA</label>
+        <select name="comuna" id="comuna" required>
+          <option value="">-- Seleccione la comuna --</option>
+          <!-- Comunas de la Región Metropolitana -->
+          <option value="Cerrillos">Cerrillos</option>
+          <option value="Cerro Navia">Cerro Navia</option>
+          <option value="Conchalí">Conchalí</option>
+          <option value="El Bosque">El Bosque</option>
+          <option value="Estación Central">Estación Central</option>
+          <option value="Huechuraba">Huechuraba</option>
+          <option value="Independencia">Independencia</option>
+          <option value="La Cisterna">La Cisterna</option>
+          <option value="La Florida">La Florida</option>
+          <option value="La Granja">La Granja</option>
+          <option value="La Pintana">La Pintana</option>
+          <option value="La Reina">La Reina</option>
+          <option value="Las Condes">Las Condes</option>
+          <option value="Lo Barnechea">Lo Barnechea</option>
+          <option value="Lo Espejo">Lo Espejo</option>
+          <option value="Lo Prado">Lo Prado</option>
+          <option value="Macul">Macul</option>
+          <option value="Maipú">Maipú</option>
+          <option value="Ñuñoa">Ñuñoa</option>
+          <option value="Pedro Aguirre Cerda">Pedro Aguirre Cerda</option>
+          <option value="Peñalolén">Peñalolén</option>
+          <option value="Providencia">Providencia</option>
+          <option value="Pudahuel">Pudahuel</option>
+          <option value="Quilicura">Quilicura</option>
+          <option value="Quinta Normal">Quinta Normal</option>
+          <option value="Recoleta">Recoleta</option>
+          <option value="Renca">Renca</option>
+          <option value="San Joaquín">San Joaquín</option>
+          <option value="San Miguel">San Miguel</option>
+          <option value="San Ramón">San Ramón</option>
+          <option value="Santiago">Santiago</option>
+          <option value="Vitacura">Vitacura</option>
+          <option value="Puente Alto">Puente Alto</option>
+          <option value="Pirque">Pirque</option>
+          <option value="San José de Maipo">San José de Maipo</option>
+          <option value="Colina">Colina</option>
+          <option value="Lampa">Lampa</option>
+          <option value="Tiltil">Tiltil</option>
+          <option value="San Bernardo">San Bernardo</option>
+          <option value="Buin">Buin</option>
+          <option value="Calera de Tango">Calera de Tango</option>
+          <option value="Paine">Paine</option>
+          <option value="Melipilla">Melipilla</option>
+          <option value="Alhué">Alhué</option>
+          <option value="Curacaví">Curacaví</option>
+          <option value="María Pinto">María Pinto</option>
+          <option value="San Pedro">San Pedro</option>
+          <option value="Talagante">Talagante</option>
+          <option value="El Monte">El Monte</option>
+          <option value="Isla de Maipo">Isla de Maipo</option>
+          <option value="Padre Hurtado">Padre Hurtado</option>
+          <option value="Peñaflor">Peñaflor</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn" id="btn-register">REGISTRAR</button>
+    </form>
+  </main>
+  <!-- Firebase y registro desde CDN -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA1_om-_HPyYVnUo8ELiM5Zob2VSMGbWvw",
+      authDomain: "pasteleriamilsaborestresleches.firebaseapp.com",
+      projectId: "pasteleriamilsaborestresleches",
+      storageBucket: "pasteleriamilsaborestresleches.firebasestorage.app",
+      messagingSenderId: "724534518591",
+      appId: "1:724534518591:web:fda9e47afb93ed6854e98a",
+      measurementId: "G-FXQWCCHM83",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const formRegister = document.getElementById("form-register");
+
+    if (formRegister) {
+      formRegister.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btnRegister = document.getElementById("btn-register");
+        if (!btnRegister) return;
+        btnRegister.disabled = true;
+        btnRegister.textContent = "Registrando...";
+
+        try {
+          const correo = document.getElementById("correo_reg")?.value.trim();
+          const password = document.getElementById("password")?.value;
+
+          if (!correo || !password) {
+            alert("Por favor, completa correo y contraseña");
+            btnRegister.disabled = false;
+            btnRegister.textContent = "Registrar";
+            return;
+          }
+
+          const userCredential = await createUserWithEmailAndPassword(auth, correo, password);
+          const user = userCredential.user;
+
+          const runInput = document.getElementById("reg-run");
+          const nombreInput = document.getElementById("nombre");
+          const correo2Input = document.getElementById("correo2");
+          const telefonoInput = document.getElementById("telefono");
+          const comunaInput = document.getElementById("comuna");
+          const fechaInput = document.getElementById("reg-fecha");
+
+          const run = runInput ? parseInt(runInput.value.trim()) : null;
+          const nombre = nombreInput ? nombreInput.value.trim() : "";
+          const correo2 = correo2Input ? correo2Input.value.trim() : "";
+          const telefono = telefonoInput ? parseInt(telefonoInput.value.trim()) : null;
+          const comuna = comunaInput ? comunaInput.value : "";
+          const fechaNacimiento = fechaInput && fechaInput.value ? new Date(fechaInput.value) : null;
+
+          // Construimos el objeto userData con los datos formateados según lo solicitado
+          const userData = {
+            run: run,
+            nombre_completo: nombre,
+            correo: correo,
+            contraseña: password,
+            telefono: telefono,
+            fecha_nacimiento: fechaNacimiento ? fechaNacimiento.toISOString() : null,
+            comuna: comuna,
+            createdAt: new Date().toISOString(),
+          };
+
+          await setDoc(doc(db, "usuario", user.uid), userData);
+
+          alert("¡Registro exitoso! Usuario creado y guardado en Firestore.");
+        } catch (error) {
+          console.error("Error en registro:", error);
+          alert("Error al registrar usuario: " + (error.message || error.code));
+        } finally {
+          btnRegister.disabled = false;
+          btnRegister.textContent = "Registrar";
+        }
+      });
+    }
+
+  </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('form-registro');
+  form.addEventListener('submit', function(e) {
+    const fechaNacimiento = document.getElementById('fecha_nacimiento').value;
+    if (!fechaNacimiento) {
+      alert('Por favor, ingrese su fecha de nacimiento.');
+      e.preventDefault();
+      return;
+    }
+    const hoy = new Date();
+    const nacimiento = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
+    }
+    if (edad > 50) {
+      alert('¡Felicidades! Por tener más de 50 años, tienes un 50% de descuento.');
+
+    }
+
+  });
+});
+</script>
+</body>
+</html>
+

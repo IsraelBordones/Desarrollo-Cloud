@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Usuario</title>
+  <link rel="stylesheet" href="../css/perfilcliente.css">
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, doc, updateDoc, getDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
+      authDomain: "pasteleriamilsaborestresleches.web.app",
+      projectId: "pasteleriamilsaborestresleches",
+      storageBucket: "pasteleriamilsaborestresleches.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef123456"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    window.firebaseAuth = auth;
+    window.firebaseDb = db;
+    window.onAuthStateChanged = onAuthStateChanged;
+    window.doc = doc;
+    window.updateDoc = updateDoc;
+    window.getDoc = getDoc;
+    window.collection = collection;
+    window.query = query;
+    window.where = where;
+    window.getDocs = getDocs;
+  </script>
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">⚙</div>
+        <span id="sidebar-username">Bienvenido *Usuario</span>
+      </div>
+      
+      <nav class="nav-menu">
+        <div class="nav-item active" data-view="compras">
+          <i class="icon"></i>
+          <span>Historial de compra</span>
+        </div>
+        <div class="nav-item" data-view="orders">
+          <i class="icon"></i>
+          <span>Historial de contactos</span>
+        </div>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="nav-item carrito" id="carrito-btn">
+          <i class="icon"></i>
+          <span>Carrito</span>
+        </div>
+        <div class="nav-item tienda" id="tienda-btn">
+          <i class="icon"></i>
+          <span>Tienda</span>
+        </div>
+        <div class="nav-item profile" id="profile-btn">
+          <i class="icon"></i>
+          <span>Mi Perfil</span>
+        </div>
+        <div class="nav-item logout" id="logout-btn">
+          <i class="icon"></i>
+          <span>Cerrar Sesión</span>
+        </div>
+      </div>
+    </div>
+
+    <!--Lo principal-->
+    <div class="main-content">
+      <!--dea-->
+      <div class="header">
+        <h1 id="page-title">¡HOLA --------!</h1>
+        <div class="header-actions">
+          <button class="notification-btn"></button>
+        </div>
+      </div>
+
+      <!--el panel-->
+      <div class="content-view" id="dashboard-view">
+        <div class="welcome-message">
+          <p>Bienvenido al Perfil de Cliente</p>
+          <a href="carrito.html" id="carrito-link">Carrito (0)</a>
+        </div>
+      </div>
+
+      <div class="content-view hidden" id="compras-view">
+        <div class="view-header">
+          <h2>Historial de Compras</h2>
+        </div>
+
+        
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID Compra</th>
+                <th>Fecha Compra</th>
+                <th>Estado</th>
+                <th>Método Pago</th>
+                <th>Total</th>
+                <th>Items</th>
+              </tr>
+            </thead>
+            <tbody id="compras-tbody">
+              <!-- Purchase history will be loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="no-compras-message" style="text-align: center; margin-top: 2rem; display: none;">
+          No hay compras registradas.
+        </div>
+      </div>
+
+      <div class="content-view hidden" id="orders-view">
+        <div class="view-header">
+          <h2>Historial de Contactos</h2>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Mensaje</th>
+                <th>RUT</th>
+              </tr>
+            </thead>
+            <tbody id="contactos-tbody">
+              <!-- Contactos will be loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="no-contactos-message" style="text-align: center; margin-top: 2rem; display: none;">
+          No hay contactos registrados.
+        </div>
+      </div>
+
+      <div class="content-view hidden" id="profile-view">
+        <div class="form-container">
+          <h2>MI PERFIL</h2>
+          
+          <form class="user-form">
+            <div class="form-section">
+              <div class="section-header">Información personal</div>
+
+              <div class="form-group">
+                <label>NOMBRE</label>
+                <input type="text" class="form-input" id="input-nombre" required>
+              </div>
+
+              <div class="form-group" style="display: none;">
+                <label>CORREO ELECTRÓNICO</label>
+                <input type="email" class="form-input" id="input-correo" required readonly>
+              </div>
+            </div>
+    
+    <div class="form-actions">
+      <button type="submit" class="btn-register">GUARDAR CAMBIOS</button>
+    </div>
+  </form>
+  <div id="update-message" style="margin-top: 1rem; font-weight: bold;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Historial de Compras -->
+  <div id="historial-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Historial de Compras</h2>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID Compra</th>
+                <th>Fecha Compra</th>
+                <th>Estado</th>
+                <th>Método Pago</th>
+                <th>Total</th>
+                <th>Items</th>
+              </tr>
+            </thead>
+            <tbody id="historial-tbody">
+              <!-- Purchase history will be loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+        <div id="no-compras-message" style="text-align: center; margin-top: 2rem; display: none;">
+          No hay compras registradas.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check for server message in URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const mensaje = urlParams.get('mensaje');
+      if (mensaje) {
+        // Display the server message
+        const welcomeMessage = document.querySelector('.welcome-message p');
+        if (welcomeMessage) {
+          welcomeMessage.textContent = decodeURIComponent(mensaje);
+        }
+      }
+
+      const navItems = document.querySelectorAll('.nav-item[data-view]');
+      const contentViews = document.querySelectorAll('.content-view');
+      const pageTitle = document.getElementById('page-title');
+      const newUserBtn = document.getElementById('new-user-btn');
+      const tiendaBtn = document.getElementById('tienda-btn');
+      const profileBtn = document.getElementById('profile-btn');
+      const logoutBtn = document.getElementById('logout-btn');
+      const sidebarUsername = document.getElementById('sidebar-username');
+      const updateMessage = document.getElementById('update-message');
+      let userName = '';
+
+      // Función para cambiar vistas
+      function showView(viewName, title) {
+        contentViews.forEach(view => view.classList.add('hidden'));
+        const targetView = document.getElementById(viewName + '-view');
+        if (targetView) {
+          targetView.classList.remove('hidden');
+        }
+        // Only set title if it's not the dashboard view (to preserve personalized greeting)
+        if (viewName !== 'dashboard') {
+          pageTitle.textContent = title;
+        }
+      }
+
+      // Navegación del sidebar
+      navItems.forEach(item => {
+        item.addEventListener('click', function() {
+          const viewName = this.getAttribute('data-view');
+          navItems.forEach(nav => nav.classList.remove('active'));
+          this.classList.add('active');
+          switch(viewName) {
+            case 'compras':
+              showView('compras', 'Historial de Compras');
+              loadHistorialCompras();
+              break;
+            case 'orders':
+              showView('orders', 'Historial de Contactos');
+              loadContactos();
+              break;
+          }
+        });
+      });
+
+      if (profileBtn) {
+        profileBtn.addEventListener('click', function() {
+          navItems.forEach(nav => nav.classList.remove('active'));
+          showView('profile', 'Mi Perfil');
+        });
+      }
+
+      if (newUserBtn) {
+        newUserBtn.addEventListener('click', function() {
+          showView('profile', 'Mi Perfil');
+        });
+      }
+
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          // Eliminar token y usuario de localStorage
+          localStorage.removeItem('usuario');
+          localStorage.removeItem('token');
+          // Redirigir a index.html
+          window.location.href = '/index.html';
+        });
+      }
+
+      const carritoBtn = document.getElementById('carrito-btn');
+      if (carritoBtn) {
+        carritoBtn.addEventListener('click', function() {
+          window.location.href = 'carrito.html';
+        });
+      }
+
+      if (tiendaBtn) {
+        tiendaBtn.addEventListener('click', function() {
+          // Redirigir a index.html
+          window.location.href = '/index.html';
+        });
+      }
+
+      // Load user data from localStorage
+      function loadUserData() {
+        try {
+          // Check both 'usuario' and 'usuarioActual' keys for compatibility
+          const user = JSON.parse(localStorage.getItem('usuario') || localStorage.getItem('usuarioActual'));
+          console.log('loadUserData - localStorage user:', user);
+          if (user) {
+            document.getElementById('input-nombre').value = user.nombre || '';
+            document.getElementById('input-correo').value = user.correo || '';
+
+            if (sidebarUsername) sidebarUsername.textContent = `Bienvenido ${user.nombre}`;
+            if (pageTitle && pageTitle.textContent === '¡HOLA --------!') {
+              pageTitle.textContent = `¡HOLA ${user.nombre}!`;
+            }
+            console.log('loadUserData - Updated UI with user:', user.nombre);
+          } else {
+            console.log('loadUserData - No user data found in localStorage');
+          }
+        } catch(e) {
+          console.error('Error loading user data:', e);
+        }
+      }
+
+      // Load additional data from Firestore
+      async function loadUserDataFromFirestore() {
+        try {
+          if (window.firebaseDb) {
+            // Get user data from localStorage
+            const localUser = JSON.parse(localStorage.getItem('usuario') || localStorage.getItem('usuarioActual') || '{}');
+            const correo = localUser.correo;
+
+            if (correo) {
+              const q = window.query(window.collection(window.firebaseDb, 'usuario'), window.where('correo', '==', correo));
+              const querySnapshot = await window.getDocs(q);
+              if (!querySnapshot.empty) {
+                const userData = querySnapshot.docs[0].data();
+                const nombreCompleto = userData.nombre_completo || userData.nombre || '';
+
+                document.getElementById('input-nombre').value = nombreCompleto;
+                document.getElementById('input-correo').value = correo;
+
+                // Update localStorage
+                const updatedUser = { nombre: nombreCompleto, correo: correo };
+                localStorage.setItem('usuario', JSON.stringify(updatedUser));
+
+                if (sidebarUsername) sidebarUsername.textContent = `Bienvenido ${nombreCompleto}`;
+                if (pageTitle) pageTitle.textContent = `¡HOLA ${nombreCompleto}!`;
+              }
+            }
+          }
+        } catch(e) {
+          console.error('Error loading user data from Firestore:', e);
+        }
+      }
+
+      // Save updated name to Firestore
+      async function updateUserNameInFirestore(newName) {
+        try {
+          if (!window.firebaseDb) {
+            throw new Error('Firebase no está disponible');
+          }
+
+          // Get user data from localStorage
+          const localUser = JSON.parse(localStorage.getItem('usuario') || localStorage.getItem('usuarioActual') || '{}');
+          const correo = localUser.correo;
+
+          if (!correo) {
+            throw new Error('Correo no disponible');
+          }
+
+          const q = window.query(window.collection(window.firebaseDb, 'usuario'), window.where('correo', '==', correo));
+          const querySnapshot = await window.getDocs(q);
+          if (!querySnapshot.empty) {
+            const userDocRef = querySnapshot.docs[0].ref;
+            await window.updateDoc(userDocRef, { nombre_completo: newName });
+            return true;
+          } else {
+            throw new Error('Documento de usuario no encontrado');
+          }
+        } catch (error) {
+          console.error('Error updating user name in Firestore:', error);
+          return false;
+        }
+      }
+
+      // Form submission handler to save updated name
+      const userForm = document.querySelector('.user-form');
+      if (userForm) {
+        userForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          updateMessage.textContent = '';
+
+          const newName = document.getElementById('input-nombre').value.trim();
+          const email = document.getElementById('input-correo').value.trim();
+
+          if (!newName) {
+            updateMessage.style.color = 'red';
+            updateMessage.textContent = 'El nombre no puede estar vacío.';
+            return;
+          }
+
+          // Update localStorage
+          try {
+            const user = JSON.parse(localStorage.getItem('usuario')) || {};
+            user.nombre = newName;
+            localStorage.setItem('usuario', JSON.stringify(user));
+            if (sidebarUsername) sidebarUsername.textContent = `Bienvenido ${newName}`;
+            if (pageTitle) pageTitle.textContent = `¡HOLA ${newName}!`;
+          } catch(e) {
+            console.error('Error updating localStorage:', e);
+          }
+
+          // Update Firestore
+          const success = await updateUserNameInFirestore(newName);
+          if (success) {
+            updateMessage.style.color = 'green';
+            updateMessage.textContent = 'Nombre actualizado correctamente.';
+            // Reload data from Firestore to ensure UI is updated
+            await loadUserDataFromFirestore();
+            setTimeout(() => {
+              updateMessage.textContent = '';
+            }, 2000);
+          } else {
+            updateMessage.style.color = 'red';
+            updateMessage.textContent = 'Error , nombre no se pudo actualizar.';
+            setTimeout(() => {
+              updateMessage.textContent = '';
+            }, 4000);
+          }
+        });
+      }
+
+      // Initial load user data
+      loadUserData();
+      loadUserDataFromFirestore();
+
+      // Listen for auth state changes
+      if (window.onAuthStateChanged && window.firebaseAuth) {
+        window.onAuthStateChanged(window.firebaseAuth, async (user) => {
+          if (user) {
+            await loadUserDataFromFirestore();
+          } else {
+            // User logged out, clear data
+            document.getElementById('input-nombre').value = '';
+            document.getElementById('input-correo').value = '';
+            if (sidebarUsername) sidebarUsername.textContent = 'Bienvenido *Usuario';
+            if (pageTitle) pageTitle.textContent = '¡HOLA --------!';
+          }
+        });
+      }
+
+      // Actualizar contador del carrito
+      function actualizarContadorCarrito() {
+        try {
+          const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+          const totalItems = carrito.reduce((sum, item) => sum + (item.cantidad || 1), 0);
+          const carritoLink = document.getElementById('carrito-link');
+
+          if (carritoLink) {
+            carritoLink.textContent = `Carrito (${totalItems})`;
+          }
+        } catch (error) {
+          console.error('Error actualizando contador del carrito:', error);
+        }
+      }
+
+      // Load contactos from Firestore
+      async function loadContactos() {
+        try {
+          if (!window.firebaseDb) {
+            console.error('Firebase no está disponible');
+            return;
+          }
+
+          // Get user data from localStorage
+          const localUser = JSON.parse(localStorage.getItem('usuario') || localStorage.getItem('usuarioActual') || '{}');
+          const correo = localUser.correo;
+
+          if (!correo) {
+            console.error('Correo no disponible');
+            return;
+          }
+
+          // Get user data to find RUT
+          const userQuery = window.query(window.collection(window.firebaseDb, 'usuario'), window.where('correo', '==', correo));
+          const userSnapshot = await window.getDocs(userQuery);
+
+          if (userSnapshot.empty) {
+            console.error('Usuario no encontrado');
+            return;
+          }
+
+          const userData = userSnapshot.docs[0].data();
+          const userRut = userData.run;
+
+          if (!userRut) {
+            console.error('RUT no disponible para el usuario');
+            return;
+          }
+
+          // Extract numeric RUT
+          let numericRut;
+          if (typeof userRut === 'string') {
+            numericRut = parseInt(userRut.replace(/[^0-9]/g, ''), 10);
+          } else if (typeof userRut === 'number') {
+            numericRut = userRut;
+          } else {
+            console.error('Formato de RUT inválido');
+            return;
+          }
+
+          // Query contactos collection
+          const contactosQuery = window.query(window.collection(window.firebaseDb, 'contactos'), window.where('id_usuario', '==', numericRut));
+          const contactosSnapshot = await window.getDocs(contactosQuery);
+
+          const contactosTbody = document.getElementById('contactos-tbody');
+          const noContactosMessage = document.getElementById('no-contactos-message');
+
+          // Clear existing rows
+          contactosTbody.innerHTML = '';
+
+          if (contactosSnapshot.empty) {
+            noContactosMessage.style.display = 'block';
+            return;
+          }
+
+          noContactosMessage.style.display = 'none';
+
+          // Add rows for each contacto
+          contactosSnapshot.forEach(doc => {
+            const contacto = doc.data();
+            const fecha = contacto.fecha_publicacion ? contacto.fecha_publicacion.toDate().toLocaleDateString('es-ES') : 'N/A';
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${fecha}</td>
+              <td>${contacto.nombre || 'N/A'}</td>
+              <td>${contacto.correo || 'N/A'}</td>
+              <td>${contacto.mensaje || 'N/A'}</td>
+              <td>${contacto.id_usuario || 'N/A'}</td>
+            `;
+            contactosTbody.appendChild(row);
+          });
+
+        } catch (error) {
+          console.error('Error loading contactos:', error);
+          const noContactosMessage = document.getElementById('no-contactos-message');
+          noContactosMessage.textContent = 'Error al cargar contactos.';
+          noContactosMessage.style.display = 'block';
+        }
+      }
+
+      // Load historial de compras from Firestore
+      async function loadHistorialCompras() {
+        try {
+          if (!window.firebaseDb) {
+            console.error('Firebase no está disponible');
+            return;
+          }
+
+          // Get user data from localStorage
+          const localUser = JSON.parse(localStorage.getItem('usuario') || localStorage.getItem('usuarioActual') || '{}');
+          const correo = localUser.correo;
+
+          if (!correo) {
+            console.error('Correo no disponible');
+            return;
+          }
+
+          // Query compras collection filtered by usuarioId (which is the email)
+          const comprasQuery = window.query(window.collection(window.firebaseDb, 'compras'), window.where('usuarioId', '==', correo));
+          const comprasSnapshot = await window.getDocs(comprasQuery);
+
+          const comprasTbody = document.getElementById('compras-tbody');
+          const noComprasMessage = document.getElementById('no-compras-message');
+
+          // Clear existing rows
+          comprasTbody.innerHTML = '';
+
+          if (comprasSnapshot.empty) {
+            noComprasMessage.style.display = 'block';
+            return;
+          }
+
+          noComprasMessage.style.display = 'none';
+
+          // Add rows for each compra
+          comprasSnapshot.forEach(doc => {
+            const compra = doc.data();
+            const fecha = compra.fechaCompra ? compra.fechaCompra.toDate().toLocaleDateString('es-ES') : 'N/A';
+            const estado = compra.estado || 'N/A';
+            const metodoPago = compra.metodoPago || 'N/A';
+            const total = compra.total ? `$${compra.total.toLocaleString('es-ES')}` : 'N/A';
+            const items = compra.items ? compra.items.map(item => `${item.nombre} (x${item.cantidad})`).join(', ') : 'N/A';
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${doc.id}</td>
+              <td>${fecha}</td>
+              <td><span class="status ${estado.toLowerCase()}">${estado}</span></td>
+              <td>${metodoPago}</td>
+              <td>${total}</td>
+              <td>${items}</td>
+            `;
+            comprasTbody.appendChild(row);
+          });
+
+        } catch (error) {
+          console.error('Error loading historial de compras:', error);
+          const noComprasMessage = document.getElementById('no-compras-message');
+          noComprasMessage.textContent = 'Error al cargar el historial de compras.';
+          noComprasMessage.style.display = 'block';
+        }
+      }
+
+      // Modal functionality
+      const historialModal = document.getElementById('historial-modal');
+      const closeModalBtn = document.querySelector('.close-modal');
+
+      if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', function() {
+          historialModal.classList.remove('show');
+        });
+      }
+
+      // Close modal when clicking outside
+      if (historialModal) {
+        historialModal.addEventListener('click', function(e) {
+          if (e.target === historialModal) {
+            historialModal.classList.remove('show');
+          }
+        });
+      }
+
+      // Actualizar contador inicialmente y escuchar cambios en localStorage
+      actualizarContadorCarrito();
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'carrito') {
+          actualizarContadorCarrito();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
+<script type="module" src="../../js/auth.js"></script>

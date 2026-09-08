@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lanzador API Docs</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 50px auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            text-align: center; 
+        }
+        .btn { 
+            background: #17a2b8; 
+            color: white; 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            text-decoration: none; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .btn:hover { background: #138496; }
+        .loading { display: none; color: #6c757d; }
+        .instructions { 
+            background: #e9ecef; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin: 20px 0; 
+            text-align: left; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Documentación API</h1>
+        <p>Este lanzador abrirá Swagger Editor con la documentación de tu API Firebase.</p>
+        
+        <div class="instructions">
+            <h3>Instrucciones:</h3>
+            <ol>
+                <li>Haz clic en "Abrir Swagger Editor"</li>
+                <li>Se abrirá <strong>https://editor.swagger.io/</strong></li>
+                <li><strong>PASO IMPORTANTE:</strong> Pega el contenido YAML manualmente</li>
+                <li>¡Listo! Tendrás tu documentación interactiva</li>
+            </ol>
+        </div>
+        
+        <button id="launchBtn" class="btn" onclick="launchSwaggerEditor()">
+            <i>📋</i>
+            Abrir Swagger Editor
+        </button>
+
+        <button id="copyBtn" class="btn" onclick="copyYAMLContent()" style="background: #28a745; margin-left: 10px;">
+            <i>📄</i>
+            Copiar YAML
+        </button>
+        
+        <div id="loading" class="loading">
+            <p>Abriendo Swagger Editor...</p>
+        </div>
+
+        <div id="status" style="margin-top: 20px; font-weight: bold;"></div>
+
+        <div style="margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
+            <h4>¿Problemas?</h4>
+            <p>Si el método automático no funciona:</p>
+            <ol style="text-align: left;">
+                <li>Haz clic en "Copiar YAML"</li>
+                <li>Ve manualmente a <a href="https://editor.swagger.io/" target="_blank">https://editor.swagger.io/</a></li>
+                <li>Borra todo el contenido existente</li>
+                <li>Pega el YAML copiado (Ctrl+V)</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Contenido YAML simplificado y compatible
+        const openapiContent = `openapi: 3.0.0
+info:
+  title: API Panel de Administración - Pastelería
+  description: Documentación de servicios Firebase Firestore para gestión de Pastelería y Repostería
+  version: 1.0.0
+  contact:
+    name: Soporte Técnico
+    email: soporte@pasteleria.com
+
+servers:
+  - url: https://firestore.googleapis.com/v1
+    description: Firebase Firestore API
+
+tags:
+  - name: Dashboard
+    description: Operaciones del panel de control
+  - name: Productos
+    description: Gestión de tortas y pasteles
+  - name: Órdenes
+    description: Gestión de pedidos
+  - name: Usuarios
+    description: Gestión de clientes y administradores
+  - name: Categorías
+    description: Gestión de tipos de pastelería
+
+paths:
+  /api/dashboard/estadisticas:
+    get:
+      tags:
+        - Dashboard
+      summary: Obtener estadísticas del dashboard
+      description: Resumen de ventas de la pastelería
+      responses:
+        '200':
+          description: Estadísticas obtenidas correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstadisticasDashboard'
+              example:
+                totalCompras: 45
+                proyeccionCompras: 10
+                totalProductos: 35
+                inventarioTotal: 150
+                totalUsuarios: 120
+                nuevosUsuariosMes: 5
+
+  /api/productos:
+    get:
+      tags:
+        - Productos
+      summary: Obtener lista de productos
+      description: Obtiene el listado completo (Tortas, postres, etc.)
+      responses:
+        '200':
+          description: Lista de productos obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Producto'
+              example:
+                - id: "TC001"
+                  nombre: "Torta Cuadrada de Chocolate"
+                  precio: 45000
+                  stock: 10
+                  categoria: "Tortas Cuadradas"
+                  imagen: "https://pasteleria.web.app/assets/Img/tc001.jpg"
+                  activo: true
+                - id: "TC002"
+                  nombre: "Torta Cuadrada de Frutas"
+                  precio: 50000
+                  stock: 8
+                  categoria: "Tortas Cuadradas"
+                  imagen: "https://pasteleria.web.app/assets/Img/tc002.jpg"
+                  activo: true
+                - id: "TT001"
+                  nombre: "Torta Circular de Vainilla"
+                  precio: 40000
+                  stock: 12
+                  categoria: "Tortas Circulares"
+                  imagen: "https://pasteleria.web.app/assets/Img/tt001.jpg"
+                  activo: true
+                - id: "PI001"
+                  nombre: "Mousse de Chocolate"
+                  precio: 5000
+                  stock: 50
+                  categoria: "Postres Individuales"
+                  imagen: "https://pasteleria.web.app/assets/Img/pi001.jpg"
+                  activo: true
+                - id: "PSA001"
+                  nombre: "Torta Sin Azúcar de Naranja"
+                  precio: 48000
+                  stock: 5
+                  categoria: "Productos Sin Azúcar"
+                  imagen: "https://pasteleria.web.app/assets/Img/psa001.jpg"
+                  activo: true
+                - id: "PT001"
+                  nombre: "Empanada de Manzana"
+                  precio: 3000
+                  stock: 100
+                  categoria: "Pastelería Tradicional"
+                  imagen: "https://pasteleria.web.app/assets/Img/pt001.jpg"
+                  activo: true
+                - id: "PG001"
+                  nombre: "Brownie Sin Gluten"
+                  precio: 4000
+                  stock: 30
+                  categoria: "Productos Sin Gluten"
+                  imagen: "https://pasteleria.web.app/assets/Img/pg001.jpg"
+                  activo: true
+                - id: "PV001"
+                  nombre: "Torta Vegana de Chocolate"
+                  precio: 50000
+                  stock: 4
+                  categoria: "Productos Vegana"
+                  imagen: "https://pasteleria.web.app/assets/Img/pv001.jpg"
+                  activo: true
+                - id: "TE001"
+                  nombre: "Torta Especial de Cumpleaños"
+                  precio: 55000
+                  stock: 2
+                  categoria: "Tortas Especiales"
+                  imagen: "https://pasteleria.web.app/assets/Img/te001.jpg"
+                  activo: true
+                  
+    post:
+      tags:
+        - Productos
+      summary: Crear un nuevo producto de pastelería
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoInput'
+            example:
+              nombre: "Cheesecake Sin Azúcar"
+              precio: 47000
+              stock: 6
+              categoria: "Productos Sin Azúcar"
+              imagen: "https://pasteleria.web.app/assets/Img/psa002.jpg"
+      responses:
+        '201':
+          description: Producto creado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              example:
+                id: "PSA002"
+
+  /api/productos/{id}:
+    get:
+      tags:
+        - Productos
+      summary: Obtener pastel por ID (Código)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "TC001"
+      responses:
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Producto'
+              example:
+                id: "TC001"
+                nombre: "Torta Cuadrada de Chocolate"
+                precio: 45000
+                stock: 10
+                categoria: "Tortas Cuadradas"
+                imagen: "https://pasteleria.web.app/assets/Img/tc001.jpg"
+                activo: true
+        '404':
+          description: Producto no encontrado
+
+    put:
+      tags:
+        - Productos
+      summary: Actualizar datos del pastel
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "TC001"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductoInput'
+            example:
+              nombre: "Torta Cuadrada de Chocolate (Edición Especial)"
+              precio: 48000
+              stock: 5
+              categoria: "Tortas Cuadradas"
+      responses:
+        '200':
+          description: Producto actualizado correctamente
+        '404':
+          description: Producto no encontrado
+
+    delete:
+      tags:
+        - Productos
+      summary: Eliminar producto
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "TC001"
+      responses:
+        '200':
+          description: Producto eliminado correctamente
+        '404':
+          description: Producto no encontrado
+
+  /api/ordenes:
+    get:
+      tags:
+        - Órdenes
+      summary: Obtener lista de órdenes
+      responses:
+        '200':
+          description: Lista de órdenes obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Orden'
+              example:
+                - id: "orden1001"
+                  clienteNombre: "Juan Pérez"
+                  total: 85000
+                  estado: "completado"
+                  fecha: "2024-02-15T10:30:00Z"
+                  productos:
+                    - id: "TC001"
+                      nombre: "Torta Cuadrada de Chocolate"
+                      cantidad: 1
+                      precio: 45000
+                    - id: "TT001"
+                      nombre: "Torta Circular de Vainilla"
+                      cantidad: 1
+                      precio: 40000
+                - id: "orden1002"
+                  clienteNombre: "María García"
+                  total: 10000
+                  estado: "procesando"
+                  fecha: "2024-02-16T15:45:00Z"
+                  productos:
+                    - id: "PI001"
+                      nombre: "Mousse de Chocolate"
+                      cantidad: 2
+                      precio: 5000
+
+  /api/ordenes/{id}:
+    get:
+      tags:
+        - Órdenes
+      summary: Obtener orden por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "orden1001"
+      responses:
+        '200':
+          description: Orden encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orden'
+              example:
+                id: "orden1001"
+                clienteNombre: "Juan Pérez"
+                total: 45000
+                estado: "completado"
+                fecha: "2024-02-15T10:30:00Z"
+                productos:
+                  - id: "TC001"
+                    nombre: "Torta Cuadrada de Chocolate"
+                    cantidad: 1
+                    precio: 45000
+        '404':
+          description: Orden no encontrada
+
+  /api/ordenes/{id}/estado:
+    put:
+      tags:
+        - Órdenes
+      summary: Actualizar estado de orden
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "orden1001"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                estado:
+                  type: string
+                  enum: [pendiente, preparacion, listo_retiro, entregado, cancelado]
+            example:
+              estado: "entregado"
+      responses:
+        '200':
+          description: Estado actualizado correctamente
+
+  /api/usuarios:
+    get:
+      tags:
+        - Usuarios
+      summary: Obtener lista de usuarios
+      responses:
+        '200':
+          description: Lista de usuarios obtenida
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+              example:
+                - id: "u001"
+                  nombre: "Admin Pastelería"
+                  email: "admin@pasteleria.com"
+                  rol: "admin"
+                  activo: true
+                  telefono: "+56911112222"
+                  direccion: "Calle Dulce 123"
+
+  /api/usuarios/{id}:
+    get:
+      tags:
+        - Usuarios
+      summary: Obtener usuario por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "u001"
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+
+  /api/categorias:
+    get:
+      tags:
+        - Categorías
+      summary: Obtener categorías de la pastelería
+      description: Devuelve las categorías listadas en el menú (Tortas Cuadradas, Circulares, etc.)
+      responses:
+        '200':
+          description: Lista de categorías obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Categoria'
+              example:
+                - id: "cat_cuadradas"
+                  nombre: "Tortas Cuadradas"
+                  descripcion: "Tortas de formato cuadrado para eventos"
+                  productosCount: 2
+                  activa: true
+                - id: "cat_circulares"
+                  nombre: "Tortas Circulares"
+                  descripcion: "Tortas clásicas redondas"
+                  productosCount: 2
+                  activa: true
+                - id: "cat_individuales"
+                  nombre: "Postres Individuales"
+                  descripcion: "Porciones personales y postres al vaso"
+                  productosCount: 5
+                  activa: true
+                - id: "cat_sin_azucar"
+                  nombre: "Productos Sin Azúcar"
+                  descripcion: "Línea apta para diabéticos o dieta keto"
+                  productosCount: 2
+                  activa: true
+                - id: "cat_tradicional"
+                  nombre: "Pastelería Tradicional"
+                  descripcion: "Empanadas dulces, tartas clásicas"
+                  productosCount: 4
+                  activa: true
+                - id: "cat_sin_gluten"
+                  nombre: "Productos sin gluten"
+                  descripcion: "Certificados sin TACC"
+                  productosCount: 3
+                  activa: true
+                - id: "cat_vegana"
+                  nombre: "Productos Vegana"
+                  descripcion: "Sin ingredientes de origen animal"
+                  productosCount: 3
+                  activa: true
+                - id: "cat_especiales"
+                  nombre: "Tortas Especiales"
+                  descripcion: "Para bodas, cumpleaños temáticos"
+                  productosCount: 2
+                  activa: true
+
+components:
+  schemas:
+    EstadisticasDashboard:
+      type: object
+      properties:
+        totalCompras:
+          type: integer
+        proyeccionCompras:
+          type: integer
+        totalProductos:
+          type: integer
+        inventarioTotal:
+          type: integer
+        totalUsuarios:
+          type: integer
+        nuevosUsuariosMes:
+          type: integer
+
+    Producto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Código del producto (Ej. TC001)
+        nombre:
+          type: string
+          example: "Torta Cuadrada de Chocolate"
+        precio:
+          type: number
+          description: Precio en CLP
+          example: 45000
+        stock:
+          type: integer
+          example: 10
+        categoria:
+          type: string
+          example: "Tortas Cuadradas"
+        imagen:
+          type: string
+        activo:
+          type: boolean
+
+    ProductoInput:
+      type: object
+      required:
+        - nombre
+        - precio
+        - stock
+        - categoria
+      properties:
+        nombre:
+          type: string
+        precio:
+          type: number
+        stock:
+          type: integer
+        categoria:
+          type: string
+        imagen:
+          type: string
+
+    Orden:
+      type: object
+      properties:
+        id:
+          type: string
+        clienteNombre:
+          type: string
+        total:
+          type: number
+        estado:
+          type: string
+        fecha:
+          type: string
+          format: date-time
+        productos:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              nombre:
+                type: string
+              cantidad:
+                type: integer
+              precio:
+                type: number
+
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        email:
+          type: string
+        rol:
+          type: string
+        activo:
+          type: boolean
+        telefono:
+          type: string
+        direccion:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Categoria:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+          example: "Tortas Cuadradas"
+        descripcion:
+          type: string
+        productosCount:
+          type: integer
+        activa:
+          type: boolean`;
+
+        function launchSwaggerEditor() {
+            const btn = document.getElementById('launchBtn');
+            const loading = document.getElementById('loading');
+            const status = document.getElementById('status');
+            
+            btn.disabled = true;
+            loading.style.display = 'block';
+            status.innerHTML = 'Abriendo Swagger Editor...';
+            
+            try {
+                // Método simple: abrir Swagger Editor y preparar para pegar manualmente
+                const swaggerUrl = `https://editor.swagger.io/`;
+                window.open(swaggerUrl, '_blank');
+                
+                status.innerHTML = 'Swagger Editor abierto. <strong>Pega el contenido YAML manualmente.</strong>';
+                
+                // Mostrar instrucciones adicionales
+                setTimeout(() => {
+                    status.innerHTML += '<br><br> <strong>Instrucción:</strong> Ve a la pestaña recién abierta, borra el contenido existente y pega el YAML.';
+                }, 1000);
+                
+            } catch (error) {
+                status.innerHTML = 'Error: ' + error.message;
+            } finally {
+                loading.style.display = 'none';
+                setTimeout(() => {
+                    btn.disabled = false;
+                }, 2000);
+            }
+        }
+
+        function copyYAMLContent() {
+            const status = document.getElementById('status');
+            
+            try {
+                // Crear un elemento temporal para copiar
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = openapiContent;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                tempTextArea.setSelectionRange(0, 99999); // Para móviles
+                
+                // Ejecutar comando de copia
+                const successful = document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                
+                if (successful) {
+                    status.innerHTML = '<strong>YAML copiado al portapapeles!</strong><br>Ahora ve a <a href="https://editor.swagger.io/" target="_blank">Swagger Editor</a> y pega el contenido.';
+                    status.style.color = 'green';
+                } else {
+                    status.innerHTML = 'No se pudo copiar. Intenta manualmente.';
+                    status.style.color = 'red';
+                }
+                
+            } catch (error) {
+                status.innerHTML = 'Error al copiar: ' + error.message;
+                status.style.color = 'red';
+                
+                // Fallback: mostrar el contenido para copiar manualmente
+                setTimeout(() => {
+                    alert('Como falló la copia automática, aquí está el contenido para copiar manualmente:\n\n' + openapiContent.substring(0, 1000) + '...');
+                }, 500);
+            }
+        }
+
+        // Versión alternativa que intenta codificar de forma más segura
+        function encodeToBase64(str) {
+            try {
+                // Primero convertir a bytes UTF-8
+                const bytes = new TextEncoder().encode(str);
+                const binary = String.fromCharCode(...bytes);
+                return btoa(binary);
+            } catch (e) {
+                return null;
+            }
+        }
+    </script>
+</body>
+</html>
