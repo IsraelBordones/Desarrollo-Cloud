@@ -41,3 +41,25 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Archivos de configuración local y de sistema de Terraform
+.terraform/
+
+# Archivos de estado de Terraform (Contienen datos sensibles, ¡no subirlos!)
+*.tfstate
+*.tfstate.*
+
+# Archivos de variables de Terraform (Suelen contener contraseñas y secretos)
+*.tfvars
+*.tfvars.json
+
+# Archivos de variables de entorno para inicialización (.envrc de direnv o similares)
+.env
+.envrc
+
+# Archivos de log de Terraform
+*.log
+crash.log
+
+# Archivos de invalidación de planes de Terraform
+*.tfplan
