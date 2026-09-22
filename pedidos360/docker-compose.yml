@@ -1,0 +1,123 @@
+# Pedidos360 - local development stack
+# Brings up PostgreSQL + the 5 Spring Boot microservices.
+# The Angular frontend runs separately with `npm start` (port 4200).
+#
+# Set your Azure AD values in a .env file (see .env.example) before running:
+#   docker compose up --build
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pedidos360-postgres
+    environment:
+      POSTGRES_USER: pedidos360
+      POSTGRES_PASSWORD: pedidos360
+      POSTGRES_DB: pedidos360
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infrastructure/postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pedidos360"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pedidos-service:
+    build: ./services/pedidos-service
+    container_name: pedidos-service
+    ports:
+      - "8081:8081"
+    environment:
+      - DB_URL=jdbc:postgresql://postgres:5432/pedidos360
+      - DB_USERNAME=pedidos360
+      - DB_PASSWORD=pedidos360
+      - DB_DRIVER=org.postgresql.Driver
+      - JPA_DDL_AUTO=update
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_ISSUER_URI=https://login.microsoftonline.com/${AZURE_TENANT_ID}/v2.0
+      - AZURE_AUDIENCE=${AZURE_AUDIENCE}
+      - CORS_ALLOWED_ORIGINS=http://localhost:4200
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  productos-service:
+    build: ./services/productos-service
+    container_name: productos-service
+    ports:
+      - "8082:8082"
+    environment:
+      - DB_URL=jdbc:postgresql://postgres:5432/pedidos360
+      - DB_USERNAME=pedidos360
+      - DB_PASSWORD=pedidos360
+      - DB_DRIVER=org.postgresql.Driver
+      - JPA_DDL_AUTO=update
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_ISSUER_URI=https://login.microsoftonline.com/${AZURE_TENANT_ID}/v2.0
+      - AZURE_AUDIENCE=${AZURE_AUDIENCE}
+      - CORS_ALLOWED_ORIGINS=http://localhost:4200
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  clientes-service:
+    build: ./services/clientes-service
+    container_name: clientes-service
+    ports:
+      - "8083:8083"
+    environment:
+      - DB_URL=jdbc:postgresql://postgres:5432/pedidos360
+      - DB_USERNAME=pedidos360
+      - DB_PASSWORD=pedidos360
+      - DB_DRIVER=org.postgresql.Driver
+      - JPA_DDL_AUTO=update
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_ISSUER_URI=https://login.microsoftonline.com/${AZURE_TENANT_ID}/v2.0
+      - AZURE_AUDIENCE=${AZURE_AUDIENCE}
+      - CORS_ALLOWED_ORIGINS=http://localhost:4200
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  notificaciones-service:
+    build: ./services/notificaciones-service
+    container_name: notificaciones-service
+    ports:
+      - "8084:8084"
+    environment:
+      - DB_URL=jdbc:postgresql://postgres:5432/pedidos360
+      - DB_USERNAME=pedidos360
+      - DB_PASSWORD=pedidos360
+      - DB_DRIVER=org.postgresql.Driver
+      - JPA_DDL_AUTO=update
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_ISSUER_URI=https://login.microsoftonline.com/${AZURE_TENANT_ID}/v2.0
+      - AZURE_AUDIENCE=${AZURE_AUDIENCE}
+      - CORS_ALLOWED_ORIGINS=http://localhost:4200
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  gateway-service:
+    build: ./services/gateway-service
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_ISSUER_URI=https://login.microsoftonline.com/${AZURE_TENANT_ID}/v2.0
+      - AZURE_AUDIENCE=${AZURE_AUDIENCE}
+      - CORS_ALLOWED_ORIGINS=http://localhost:4200
+      - PEDIDOS_URL=http://pedidos-service:8081
+      - PRODUCTOS_URL=http://productos-service:8082
+      - CLIENTES_URL=http://clientes-service:8083
+      - NOTIFICACIONES_URL=http://notificaciones-service:8084
+    depends_on:
+      - pedidos-service
+      - productos-service
+      - clientes-service
+      - notificaciones-service
+
+volumes:
+  pgdata:

@@ -1,0 +1,12 @@
+# Copy to terraform.tfvars and fill with your values
+aws_region         = "us-east-1"
+project_name       = "pedidos360"
+azure_tenant_id    = "97075989-a3d5-43e2-bd08-0b6e5c89e96e"
+azure_client_id    = "d61a9b9d-fed9-4860-9174-0fdcef50b740"
+azure_api_audience = "api://pedidos360-api"
+instance_type      = "t2.micro"
+key_name           = ""
+# In AWS Academy the instance profile is usually LabInstanceProfile
+ec2_instance_profile = "LabInstanceProfile"
+cors_allowed_origins = ["*"]
+artifacts_base_url   = "https://artefactos-pedidos360.s3.amazonaws.com/"

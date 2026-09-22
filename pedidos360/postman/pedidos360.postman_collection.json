@@ -1,0 +1,187 @@
+{
+  "info": {
+    "name": "Pedidos360 API",
+    "description": "Colección de pruebas para el API Gateway de Pedidos360. Incluye peticiones sin JWT (deben devolver 401) y con JWT de Azure AD (deben devolver 2xx). Configura las variables baseUrl y token en el entorno.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "token", "value": "PASTE_AZURE_AD_JWT_HERE", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "0. Sin autenticación (esperado 401)",
+      "item": [
+        {
+          "name": "GET /pedidos sin token -> 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/pedidos", "host": ["{{baseUrl}}"], "path": ["pedidos"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Rechaza sin JWT (401)', function () {",
+                  "    pm.expect(pm.response.code).to.eql(401);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "1. Pedidos",
+      "item": [
+        {
+          "name": "GET /pedidos",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/pedidos", "host": ["{{baseUrl}}"], "path": ["pedidos"] }
+          }
+        },
+        {
+          "name": "POST /pedidos",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": 1,\n  \"productos\": \"Laptop x1\",\n  \"estado\": \"PENDIENTE\",\n  \"total\": 1200000\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/pedidos", "host": ["{{baseUrl}}"], "path": ["pedidos"] }
+          }
+        },
+        {
+          "name": "PUT /pedidos/:id",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": 1,\n  \"productos\": \"Laptop x1\",\n  \"estado\": \"ENVIADO\",\n  \"total\": 1200000\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/pedidos/1", "host": ["{{baseUrl}}"], "path": ["pedidos", "1"] }
+          }
+        },
+        {
+          "name": "DELETE /pedidos/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/pedidos/1", "host": ["{{baseUrl}}"], "path": ["pedidos", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Productos",
+      "item": [
+        {
+          "name": "GET /productos",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/productos", "host": ["{{baseUrl}}"], "path": ["productos"] }
+          }
+        },
+        {
+          "name": "POST /productos",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Monitor 27\",\n  \"precio\": 250000,\n  \"stock\": 15,\n  \"categoria\": \"Computacion\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/productos", "host": ["{{baseUrl}}"], "path": ["productos"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Clientes",
+      "item": [
+        {
+          "name": "GET /clientes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/clientes", "host": ["{{baseUrl}}"], "path": ["clientes"] }
+          }
+        },
+        {
+          "name": "POST /clientes",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Pedro Soto\",\n  \"email\": \"pedro.soto@example.com\",\n  \"telefono\": \"+56933333333\",\n  \"direccion\": \"Los Alerces 789\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/clientes", "host": ["{{baseUrl}}"], "path": ["clientes"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Notificaciones",
+      "item": [
+        {
+          "name": "POST /notificaciones/notify",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pedidoId\": 1,\n  \"mensaje\": \"Tu pedido fue enviado\",\n  \"canal\": \"EMAIL\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/notificaciones/notify", "host": ["{{baseUrl}}"], "path": ["notificaciones", "notify"] }
+          }
+        },
+        {
+          "name": "GET /notificaciones/history",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/notificaciones/history", "host": ["{{baseUrl}}"], "path": ["notificaciones", "history"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Health (público)",
+      "item": [
+        {
+          "name": "GET /gateway/health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/gateway/health", "host": ["{{baseUrl}}"], "path": ["gateway", "health"] }
+          }
+        }
+      ]
+    }
+  ]
+}

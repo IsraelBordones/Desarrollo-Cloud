@@ -1,0 +1,8 @@
+# Copy to terraform.tfvars and fill with your values
+tenant_id        = "00000000-0000-0000-0000-000000000000"
+app_display_name = "Pedidos360"
+api_identifier   = "pedidos360-api"
+redirect_uris = [
+  "http://localhost:4200",
+  "https://dxxxxxxxxxxxxx.cloudfront.net"
+]
